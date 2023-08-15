@@ -160,7 +160,10 @@ class Substitutor(SchemaVisitor[GenericSchema]):
         else:
             for key, (val, is_optional) in schema.props.keys.items():
                 if key in value:
-                    keys[key] = (val.__accept__(self, value=value[key], **kwargs), False)
+                    if is_ellipsis(value[key]):
+                        keys[key] = (val, False)
+                    else:
+                        keys[key] = (val.__accept__(self, value=value[key], **kwargs), False)
                 else:
                     keys[key] = (val, is_optional)
             for key, val in value.items():
