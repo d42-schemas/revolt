@@ -148,16 +148,15 @@ class Substitutor(SchemaVisitor[GenericSchema]):
         if result.has_errors():
             raise make_substitution_error(result, self._formatter)
 
-        if ... in value:
-            raise SubstitutionError("Can't substitute ...")
-
         keys: Dict[Any, Any] = {}
         if schema.props.keys is Nil or (len(schema.props.keys) == 1 and ... in schema.props.keys):
             for key, val in value.items():
-                keys[key] = (self._from_native(val), False)
+                keys[key] = (... if is_ellipsis(val) else self._from_native(val), False)
             if (schema.props.keys is not Nil) and (... in schema.props.keys):
                 keys[...] = (..., False)
         else:
+            if ... in value:
+                raise SubstitutionError("Can't substitute ...")
             for key, (val, is_optional) in schema.props.keys.items():
                 if key in value:
                     if is_ellipsis(value[key]):

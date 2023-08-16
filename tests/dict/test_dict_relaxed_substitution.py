@@ -111,9 +111,48 @@ def test_dict_relaxed_les_keys_substitution():
         assert res != sch
 
 
-def test_dict_relaxed_value_substitution_error():
+def test_dict_relaxed_value_substitution():
     with given:
         sch = schema.dict
+
+    with when:
+        res = substitute(sch, {
+            "id": 1,
+            ...: ...
+        })
+
+    with then:
+        assert res == schema.dict({
+            "id": schema.int(1),
+            ...: ...
+        })
+        assert res != sch
+
+
+def test_relaxed_dict_relaxed_value_substitution():
+    with given:
+        sch = schema.dict({...: ...})
+
+    with when:
+        res = substitute(sch, {
+            "id": 1,
+            ...: ...
+        })
+
+    with then:
+        assert res == schema.dict({
+            "id": schema.int(1),
+            ...: ...
+        })
+        assert res != sch
+
+
+def test_dict_relaxed_value_substitution_error():
+    with given:
+        sch = schema.dict({
+            "id": schema.int,
+            ...: ...
+        })
 
     with when, raises(Exception) as exception:
         substitute(sch, {
