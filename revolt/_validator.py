@@ -71,6 +71,8 @@ class SubstitutorValidator(Validator):
             if is_ellipsis(key):
                 continue
             if key in value:
+                if is_ellipsis(value[key]):
+                    continue
                 nested_path = deepcopy(path)[key]
                 res = val.__accept__(self, value=value[key], path=nested_path, **kwargs)
                 result.add_errors(res.get_errors())

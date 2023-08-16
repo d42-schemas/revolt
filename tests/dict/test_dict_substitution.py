@@ -256,3 +256,41 @@ def test_dict_with_optional_key_invalid_type_substitution_error():
 
     with then:
         assert exception.type is SubstitutionError
+
+
+def test_dict_with_optional_key_ellipsis_substitution():
+    with given:
+        sch = schema.dict({
+            "id": schema.int,
+            optional("name"): schema.str.len(1, ...)
+        })
+
+    with when:
+        res = substitute(sch, {
+            "id": 1,
+            "name": ...
+        })
+
+    with then:
+        assert res == schema.dict({
+            "id": schema.int(1),
+            "name": schema.str.len(1, ...),
+        })
+        assert res != sch
+
+
+def test_dict_ellipsis_substitution_error():
+    with given:
+        sch = schema.dict({
+            "id": schema.int,
+            optional("name"): schema.str.len(1, ...)
+        })
+
+    with when, raises(Exception) as exception:
+        substitute(sch, {
+            "id": 1,
+            ...: ...
+        })
+
+    with then:
+        assert exception.type is SubstitutionError
