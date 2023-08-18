@@ -16,6 +16,7 @@ from district42.types import (
     NoneSchema,
     StrSchema,
     TypeAliasPropsType,
+    UUID4Schema,
 )
 from district42.utils import is_ellipsis
 from niltype import Nil
@@ -149,19 +150,21 @@ class Substitutor(SchemaVisitor[GenericSchema]):
         if result.has_errors():
             raise make_substitution_error(result, self._formatter)
 
-        if ... in value:
-            raise SubstitutionError("Can't substitute ...")
-
         keys: Dict[Any, Any] = {}
         if schema.props.keys is Nil or (len(schema.props.keys) == 1 and ... in schema.props.keys):
             for key, val in value.items():
-                keys[key] = (self._from_native(val), False)
+                keys[key] = (... if is_ellipsis(val) else self._from_native(val), False)
             if (schema.props.keys is not Nil) and (... in schema.props.keys):
                 keys[...] = (..., False)
         else:
+            if ... in value:
+                raise SubstitutionError("Can't substitute ...")
             for key, (val, is_optional) in schema.props.keys.items():
                 if key in value:
-                    keys[key] = (val.__accept__(self, value=value[key], **kwargs), False)
+                    if is_ellipsis(value[key]):
+                        keys[key] = (val, False)
+                    else:
+                        keys[key] = (val.__accept__(self, value=value[key], **kwargs), False)
                 else:
                     keys[key] = (val, is_optional)
             for key, val in value.items():
@@ -205,6 +208,12 @@ class Substitutor(SchemaVisitor[GenericSchema]):
                          **kwargs: Any) -> GenericTypeAliasSchema[TypeAliasPropsType]:
         substituted = schema.props.type.__accept__(self, value=value, **kwargs)
         return schema.__class__(schema.props.update(type=substituted))
+
+    def visit_uuid4(self, schema: UUID4Schema, *, value: Any = Nil, **kwargs: Any) -> UUID4Schema:
+        result = schema.__accept__(self._validator, value=value)
+        if result.has_errors():
+            raise make_substitution_error(result, self._formatter)
+        return schema.__class__(schema.props.update(value=value))
 
     def visit_datetime(self, schema: DateTimeSchema, *,
                        value: Any = Nil, **kwargs: Any) -> DateTimeSchema:
