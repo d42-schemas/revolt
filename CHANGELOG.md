@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6
+
+### v1.6.0 (2023-08-18)
+
+- Add dict substitution syntax sugar [#10](https://github.com/tsv1/revolt/pull/10)
+- Add `schema.uuid4` type [#8](https://github.com/tsv1/revolt/pull/8)
+- Add `schema.datetime` type [#9](https://github.com/tsv1/revolt/pull/9)
+
 ## v1.5
 
 ### v1.5.1 (2022-05-02)
