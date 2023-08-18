@@ -6,6 +6,7 @@ from district42.types import (
     BoolSchema,
     BytesSchema,
     ConstSchema,
+    DateTimeSchema,
     DictSchema,
     FloatSchema,
     GenericSchema,
@@ -213,3 +214,7 @@ class Substitutor(SchemaVisitor[GenericSchema]):
         if result.has_errors():
             raise make_substitution_error(result, self._formatter)
         return schema.__class__(schema.props.update(value=value))
+
+    def visit_datetime(self, schema: DateTimeSchema, *,
+                       value: Any = Nil, **kwargs: Any) -> DateTimeSchema:
+        raise NotImplementedError()
