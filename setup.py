@@ -20,10 +20,10 @@ setup(
     author="Nikita Tsvetkov",
     author_email="tsv1@fastmail.com",
     python_requires=">=3.8",
-    url="https://github.com/tsv1/revolt",
+    url="https://github.com/d42-schemas/revolt",
         project_urls={
         "Docs": "https://d42.vedro.io",
-        "GitHub": "https://github.com/tsv1/revolt",
+        "GitHub": "https://github.com/d42-schemas/revolt",
     },
     license="Apache-2.0",
     packages=find_packages(exclude=("tests",)),
