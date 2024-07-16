@@ -6,7 +6,7 @@ from district42.types import (
     BoolSchema,
     BytesSchema,
     ConstSchema,
-    # DateSchema,
+    DateSchema,
     DateTimeSchema,
     DictSchema,
     FloatSchema,
