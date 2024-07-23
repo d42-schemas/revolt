@@ -6,6 +6,7 @@ from district42.types import (
     BoolSchema,
     BytesSchema,
     ConstSchema,
+    DateSchema,
     DateTimeSchema,
     DictSchema,
     FloatSchema,
@@ -230,6 +231,13 @@ class Substitutor(SchemaVisitor[GenericSchema]):
 
     def visit_datetime(self, schema: DateTimeSchema, *,
                        value: Any = Nil, **kwargs: Any) -> DateTimeSchema:
+        result = schema.__accept__(self._validator, value=value)
+        if result.has_errors():
+            raise make_substitution_error(result, self._formatter)
+        return schema.__class__(schema.props.update(value=value))
+
+    def visit_date(self, schema: DateSchema, *,
+                   value: Any = Nil, **kwargs: Any) -> DateSchema:
         result = schema.__accept__(self._validator, value=value)
         if result.has_errors():
             raise make_substitution_error(result, self._formatter)
